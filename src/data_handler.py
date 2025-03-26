@@ -236,6 +236,10 @@ def load_data(config):
         df_val = df_val[[label_col, text_col]].dropna()
         df_test = df_test[[label_col, text_col]].dropna()
 
+        df_train[label_col] = np.where(df_train[label_col] == 0, 'negative', 'positive')
+        df_val[label_col] = np.where(df_val[label_col] == 0, 'negative', 'positive')
+        df_test[label_col] = np.where(df_test[label_col] == 0, 'negative', 'positive')
+
         # Ensure text is string
         df_train[text_col] = df_train[text_col].astype(str)
         df_val[text_col] = df_val[text_col].astype(str)
