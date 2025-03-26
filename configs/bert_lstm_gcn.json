@@ -1,0 +1,6 @@
+{
+  "model_type": "bert_lstm_gcn",
+  "learning_rate": 2e-5,
+  "lstm_layers": 1,
+  "gcn_layers": 2
+}

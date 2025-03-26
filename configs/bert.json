@@ -1,0 +1,4 @@
+{
+  "model_type": "bert",
+  "learning_rate": 2e-5
+}

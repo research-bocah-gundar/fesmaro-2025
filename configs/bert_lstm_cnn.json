@@ -1,0 +1,7 @@
+{
+  "model_type": "bert_lstm_cnn",
+  "learning_rate": 2e-5,
+  "lstm_layers": 1,
+  "cnn_filters": 100,
+  "cnn_kernel_sizes": [3, 4, 5]
+}
