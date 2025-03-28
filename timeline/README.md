@@ -117,9 +117,16 @@
   - Finalisasi Streamlit dashboard:
     - Visualisasi hasil EDA
     - Visualisasi topik LDA dan LSA (interaktif)
-    - Komponen analisis sentimen real-time
-    - Visualisasi grafik hasil evaluasi
+    - Komponen analisis sentimen real-time (test/user input)
+    - Visualisasi grafik hasil evaluasi model
+
+      Urutan visualisasi performa model:
+      - train curves
+      - classification report (table)
+      - conf matrix
+      
     - Visualisasi graph structure (node & edge)
+
     - Upload dan deployment dashboard
 
 - **Siang (13:00-17:00)**:
