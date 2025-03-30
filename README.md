@@ -1,4 +1,4 @@
-# Analisis Sentimen Ulasan Amazon Menggunakan Model Deep Learning Hybrid
+# Analisis Sentimen Ulasan Produk Amazon Menggunakan Perbandingan Model Deep Learning dan Arsitektur Hybrid  
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT) <!-- Ganti dengan lisensi Anda jika berbeda -->
 
