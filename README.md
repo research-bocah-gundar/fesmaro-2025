@@ -144,6 +144,19 @@ Sebagai analisis tambahan, Latent Dirichlet Allocation (LDA) dan Latent Semantic
 
 ## 5. Teknologi yang Digunakan
 
+Kami menggunakan teknlogi sebagai berikut
+<p align="left">
+  <img height="64" src="https://cdn.simpleicons.org/kaggle" alt="Kaggle"/>
+  <img height="64" src="https://cdn.simpleicons.org/googlecolab" alt="Google Colab"/>
+
+  <img height="64" src="https://cdn.simpleicons.org/python" alt="Python"/>
+  <img height="64" src="https://cdn.simpleicons.org/anaconda" alt="Anaconda"/>
+  <img height="64" src="https://cdn.simpleicons.org/jupyter" alt="Jupyter"/>
+  <img height="64" src="https://cdn.simpleicons.org/streamlit" alt="Streamlit"/>
+  <img height="64" src="https://cdn.simpleicons.org/pytorch" alt="PyTorch"/>
+  <img height="64" src="https://cdn.simpleicons.org/pandas" alt="Pandas"/>
+</p>
+
 *   **Bahasa**: Python 3
 *   **Analisis Data & Pra-pemrosesan**: Pandas, NumPy, NLTK, Scikit-learn, Contractions, RE, Collections
 *   **Machine Learning / Deep Learning**: PyTorch, Transformers (Hugging Face), Safetensors
@@ -156,6 +169,100 @@ Sebagai analisis tambahan, Latent Dirichlet Allocation (LDA) dan Latent Semantic
 ## 6. Struktur Direktori
 
 Struktur direktori proyek diorganisir sebagai berikut untuk memisahkan data, konfigurasi, kode sumber, model, dan aset lainnya:
+```
+|   .gitignore
+|   fesmaro-2025-analisis-big-data-lsalda.ipynb
+|   fesmaro-2025-analisis-big-data-training.ipynb
+|   fesmaro-2025-analisis-big-data.ipynb
+|   lda_visualization.html
+|   LICENSE
+|   main.py
+|   README.md
+|   requirements.txt
+|   structure.txt
+|   tfidf_features.pkl
+|   
++---assets
+|   +---img
+|   |   +---eda
+|   |   |       deteksi-outlier(char).png
+|   |   |       deteksi-outlier(word).png
+|   |   |       distribution-of-review-length(char).png
+|   |   |       distribution-of-review-sentiment(word).png
+|   |   |       distribution-of-review-sentiment.png
+|   |   |       negative-reviews-word.png
+|   |   |       positive-reviews-word.png
+|   |   |       
+|   |   \---model
+|   |       +---bert
+|   |       |       bert-conf-matrix.png
+|   |       |       bert-graph.png
+|   |       |       bert-training-curves.png
+|   |       |       
+|   |       +---bert-lstm-cnn
+|   |       |       bert-lstm-cnn-conf-matrix.png
+|   |       |       bert-lstm-cnn-graph.png
+|   |       |       bert-lstm-cnn-training-curves.png
+|   |       |       
+|   |       +---bert-lstm-gcn
+|   |       |       bert-lstm-gcn-conf-matrix.png
+|   |       |       bert-lstm-gcn-graph.png
+|   |       |       bert-lstm-gcn-training-curves.png
+|   |       |       
+|   |       +---cnn
+|   |       |       cnn-conf-matrix.png
+|   |       |       cnn-graph.png
+|   |       |       cnn-training-curves.png
+|   |       |       
+|   |       +---gcn
+|   |       |       gcn-conf-matrix.png
+|   |       |       gcn-graph.png
+|   |       |       gcn-training-curves.png
+|   |       |       
+|   |       \---lstm
+|   |               lstm-conf-matrix.png
+|   |               lstm-graph.png
+|   |               lstm-training-curves.png
+|   |               
+|   \---Topic Modelling
+|           LDA-score.png
+|           
++---configs
+|       base_config.json
+|       bert.json
+|       bert_lstm_cnn.json
+|       bert_lstm_gcn.json
+|       cnn.json
+|       gcn.json
+|       lstm.json
+|       README.md
+|       
++---data
+|       df_test.csv
+|       df_val.csv
+|       df_with_lda_features.csv
+|       df_with_lsa_features.csv
+|       final_df.csv
+|       README.md
+|       
++---model
+|       cnn_best_model.safetensors
+|       gcn_best_model.safetensors
+|       lstm_best_model.safetensors
+|       
++---src
+|       config_loader.py
+|       data_handler.py
+|       evaluator.py
+|       models.py
+|       trainer.py
+|       utils.py
+|       __init__.py
+|       
+\---timeline
+        README.md
+        timeline.html
+```
 
 ## 7. Hasil dan Laporan Pelatihan
 
