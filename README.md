@@ -1,3 +1,5 @@
+
+---
 # 📊 Fesemaro 2025 - Analisis Sentimen Amazon Reviews  
 
 Proyek ini bertujuan untuk melakukan analisis sentimen terhadap ulasan produk Amazon menggunakan dataset berikut:  
@@ -6,14 +8,39 @@ Proyek ini bertujuan untuk melakukan analisis sentimen terhadap ulasan produk Am
 ---
 
 ## 🚀 Teknologi & Library yang Digunakan  
-Berikut adalah library utama yang digunakan dalam proyek ini:  
 
-- **Pandas** → Untuk manipulasi dan analisis data  
-- **NumPy** → Untuk operasi numerik  
-- **Matplotlib & Seaborn** → Untuk visualisasi data    
-- **NLTK** → Untuk pemrosesan teks (opsional)  
+Kami menggunakan teknlogi sebagai berikut
+<p align="left">
+  <img height="64" src="https://cdn.simpleicons.org/kaggle" alt="Kaggle"/>
+  <img height="64" src="https://cdn.simpleicons.org/googlecolab" alt="Google Colab"/>
 
-Pastikan semua dependensi sudah terinstal sebelum menjalankan proyek ini.  
+  <img height="64" src="https://cdn.simpleicons.org/python" alt="Python"/>
+  <img height="64" src="https://cdn.simpleicons.org/anaconda" alt="Anaconda"/>
+  <img height="64" src="https://cdn.simpleicons.org/jupyter" alt="Jupyter"/>
+  <img height="64" src="https://cdn.simpleicons.org/streamlit" alt="Streamlit"/>
+  <img height="64" src="https://cdn.simpleicons.org/pytorch" alt="PyTorch"/>
+  <img height="64" src="https://cdn.simpleicons.org/pandas" alt="Pandas"/>
+</p>
+
+---
+## Latar Belakang
+(isi)
+
+---
+
+## Daftar Isi
+
+---
+
+## Live Demo
+
+Anda dapat mencoba di [Link](https://rbg-sentiment-analysis.streamlit.app/)
+
+---
+## Dataset
+
+---
+## Stuktur Folder
 
 ---
 
@@ -41,4 +68,17 @@ Pastikan semua dependensi sudah terinstal sebelum menjalankan proyek ini.
    ```bash
    pip install -r requirements.txt
    ```   
+---
+## Teknik digunakan
+
+---
+## Arsitektur Model
+
+---
+## Kontak
+
+---
+## Lisensi
+
+---
 
