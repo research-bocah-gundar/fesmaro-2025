@@ -4,11 +4,61 @@ import torch
 from torch.utils.data import Dataset, DataLoader
 from transformers import BertTokenizer
 import spacy
+import re
 import os
 import pickle
+import tqdm
+from collections import Counter
 import hashlib
 from sklearn.preprocessing import LabelEncoder
+import warnings
+warnings.filterwarnings("ignore", category=UserWarning, module='torch') # Ignore warnings from torch
 
+# --- Utility Functions ---
+def simple_tokenizer(text):
+    """Tokenizer sederhana: lowercase dan split berdasarkan non-alphanumeric."""
+    text = text.lower()
+    # Simpan tanda baca dasar sebagai token terpisah, split yang lain
+    text = re.sub(r"([.!?,'()])", r" \1 ", text)
+    tokens = text.split()
+    return tokens
+
+def build_vocab(texts, max_vocab_size, min_freq=2):
+    """Membangun vocabulary dari list teks."""
+    print("Building vocabulary...")
+    word_counts = Counter()
+    for text in tqdm(texts, desc="Counting words"):
+        tokens = simple_tokenizer(str(text)) # Pastikan string
+        word_counts.update(tokens)
+
+    # Filter berdasarkan frekuensi minimum
+    filtered_counts = {word: count for word, count in word_counts.items() if count >= min_freq}
+
+    # Urutkan berdasarkan frekuensi (descending)
+    sorted_words = sorted(filtered_counts.keys(), key=lambda w: word_counts[w], reverse=True)
+
+    # Buat vocab: <PAD>=0, <UNK>=1, lalu kata-kata lainnya
+    vocab = {'<PAD>': 0, '<UNK>': 1}
+    idx = 2
+    for word in sorted_words:
+        if idx >= max_vocab_size:
+            break
+        if word not in vocab: # Seharusnya tidak terjadi dengan sort unik, tapi aman
+            vocab[word] = idx
+            idx += 1
+
+    actual_vocab_size = len(vocab)
+    print(f"Vocabulary built: Size = {actual_vocab_size} (Requested max: {max_vocab_size}, Min freq: {min_freq})")
+    print(f"Example vocab items: {list(vocab.items())[:10]} ... {list(vocab.items())[-5:]}")
+    return vocab, actual_vocab_size
+
+def pad_sequence(ids, max_len, pad_id):
+    """Melakukan padding atau truncation pada sequence ID."""
+    if len(ids) < max_len:
+        return ids + [pad_id] * (max_len - len(ids))
+    else:
+        return ids[:max_len]
+    
 # --- Feature Extractor ---
 class FeatureExtractor:
     # ... (Salin definisi kelas FeatureExtractor dari kode sebelumnya) ...
@@ -150,61 +200,64 @@ class FeatureExtractor:
 
 # --- Dataset ---
 class SentimentDataset(Dataset):
-    # ... (Salin definisi kelas SentimentDataset dari kode sebelumnya) ...
-    # Pastikan __init__ menerima texts, labels, feature_extractor, config
-    # Pastikan __getitem__ mengembalikan dict yang sesuai dengan kebutuhan model
-     def __init__(self, texts, labels, feature_extractor, config):
+    def __init__(self, texts, labels, feature_extractor, config, vocab=None, pad_id=0, unk_id=1): # Tambahkan vocab, pad_id, unk_id
         self.texts = texts
         self.labels = labels
         self.feature_extractor = feature_extractor
         self.config = config
         self.model_type = config['model_type']
-        self.use_linguistic = config.get('use_linguistic_features', False)
+        # Simpan vocab dan ID khusus jika model non-BERT
+        self.vocab = vocab
+        self.pad_id = pad_id
+        self.unk_id = unk_id
 
-        # TODO: Implement non-BERT tokenization if needed
-        # if self.model_type in ['lstm', 'cnn', 'gcn']:
-        #     print("Warning: Non-BERT tokenization required but not implemented in Dataset.")
-            # self.vocab = build_vocab(texts, config['vocab_size'])
-            # self.tokenizer = simple_tokenizer or your specific tokenizer
+        # Validasi: vocab diperlukan untuk model non-BERT
+        if self.model_type in ['lstm', 'cnn', 'gcn'] and self.vocab is None:
+            raise ValueError(f"Model type '{self.model_type}' requires a vocabulary, but 'vocab' was not provided to SentimentDataset.")
 
-     def __len__(self):
+    def __len__(self):
         return len(self.texts)
 
-     def __getitem__(self, idx):
-        text = str(self.texts[idx]) if self.texts[idx] is not None else "" # Handle None/NaN
+    def __getitem__(self, idx):
+        text = str(self.texts[idx]) # Pastikan string
         label = self.labels[idx]
 
-        item = {'label': torch.tensor(label, dtype=torch.long)}
-        # Store text for potential debugging, but it won't be collated into a tensor
-        # item['text'] = text
+        item = {'text': text, 'label': torch.tensor(label, dtype=torch.long)}
 
-        # BERT-based features
+        # --- Fitur BERT (jika diperlukan) ---
         if 'bert' in self.model_type:
             bert_inputs = self.feature_extractor.get_bert_inputs(text)
             item['input_ids'] = bert_inputs['input_ids'].squeeze(0)
             item['attention_mask'] = bert_inputs['attention_mask'].squeeze(0)
 
-        # GCN-specific features
+        # --- Fitur GCN (selalu diekstrak jika GCN ada di model type, menggunakan SpaCy) ---
+        # Catatan: Untuk GCN murni, adj_matrix ini mungkin tidak sempurna selaras
+        # dengan token_ids dari simple_tokenizer. Ini adalah kompromi.
         if 'gcn' in self.model_type:
-             # Assumes GCN uses BERT embeddings if BERT is in model name
-             # Otherwise, needs a different adj matrix based on non-BERT tokens
-             if 'bert' in self.model_type or self.model_type == 'gcn': # Simplified: always use dep graph if gcn
-                item['adj_matrix'] = self.feature_extractor.get_dependency_graph(text)
-             # else: # Non-BERT GCN
-                 # item['adj_matrix'] = self.feature_extractor.get_non_bert_adj(tokens) # Needs implementation
+            item['adj_matrix'] = self.feature_extractor.get_dependency_graph(text)
 
-        # Linguistic features (only for specific models that use them)
-        if self.use_linguistic and self.model_type in ['bert_lstm_gcn', 'bert_lstm_cnn']:
+        # --- Fitur Linguistik (jika diperlukan) ---
+        if self.config['use_linguistic_features'] and self.model_type in ['bert_lstm_gcn', 'bert_lstm_cnn']:
             item['linguistic_features'] = self.feature_extractor.get_linguistic_features(text)
 
-        # Non-BERT token IDs (Needs implementation)
-        if self.model_type in ['lstm', 'cnn'] or (self.model_type == 'gcn' and 'bert' not in self.model_type) :
-             print(f"Warning: Requesting token_ids for {self.model_type}, but non-BERT tokenization is not implemented.")
-             # Placeholder - replace with actual tokenization and padding
-             item['token_ids'] = torch.zeros(self.config['max_length'], dtype=torch.long) # Dummy output
+        # --- Fitur untuk model non-BERT (LSTM, CNN, GCN murni) ---
+        if self.model_type in ['lstm', 'cnn', 'gcn']:
+            # 1. Tokenisasi Non-BERT
+            tokens = simple_tokenizer(text)
 
-        # Filter out None values before returning, Pytorch Dataloader doesn't like None
-        return {k: v for k, v in item.items() if v is not None}
+            # 2. Konversi Token ke ID (menggunakan vocab yang diberikan)
+            token_ids = [self.vocab.get(token, self.unk_id) for token in tokens] # Gunakan unk_id jika OOV
+
+            # 3. Padding / Truncation
+            max_len = self.config['max_length']
+            padded_ids = pad_sequence(token_ids, max_len, self.pad_id)
+
+            # 4. Buat Tensor dan tambahkan ke item
+            item['token_ids'] = torch.tensor(padded_ids, dtype=torch.long)
+
+            # (Tidak perlu lagi placeholder atau warning)
+            # (adj_matrix sudah ditangani di blok 'gcn' di atas)
+        return item
 
 
 # --- Data Loading Function ---
